@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小蝌蚪找妈妈 - 课文学习</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", "SimSun", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f5f5f5;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: all 0.3s;
+            background: white;
+            border: none;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab:hover {
+            background: #e8e8e8;
+        }
+
+        .tab.active {
+            background: white;
+            border-bottom: 3px solid #667eea;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 课文样式 */
+        .lesson-text {
+            font-size: 1.3em;
+            line-height: 2;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .lesson-text p {
+            text-indent: 2em;
+            margin-bottom: 15px;
+        }
+
+        .hl {
+            background: linear-gradient(to right, #ffecd2 0%, #fcb69f 100%);
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: bold;
+            cursor: help;
+        }
+
+        /* 生字词样式 */
+        .vocab-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            padding: 20px 0;
+        }
+
+        .vocab-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .vocab-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .vocab-char {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .vocab-meaning {
+            font-size: 0.9em;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .vocab-card.show .vocab-meaning {
+            display: block;
+        }
+
+        .vocab-tag {
+            display: inline-block;
+            font-size: 0.7em;
+            background: rgba(255,255,255,0.25);
+            padding: 1px 6px;
+            border-radius: 8px;
+            margin-bottom: 4px;
+        }
+
+        /* 练习题样式 */
+        .exercise-card {
+            background: #f9f9f9;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .exercise-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .exercise-content {
+            font-size: 1.1em;
+            color: #555;
+            line-height: 1.8;
+        }
+
+        .answer-box {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 5px;
+            border: 2px dashed #ddd;
+            display: none;
+            color: #2e7d32;
+        }
+
+        .answer-box.show {
+            display: block;
+        }
+
+        .show-answer-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+
+        .show-answer-btn:hover {
+            background: #5568d3;
+        }
+
+        /* 重点段落样式 */
+        .highlight {
+            background: linear-gradient(to right, #ffecd2 0%, #fcb69f 100%);
+            padding: 3px 5px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        /* 提示框 */
+        .tip-box {
+            background: #e8f4f8;
+            border-left: 4px solid #17a2b8;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .tip-box p {
+            color: #0c5460;
+            line-height: 1.8;
+        }
+
+        /* 图片样式 */
+        .image-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .image-container svg {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            background: #eaf6ff;
+        }
+
+        .image-caption {
+            margin-top: 10px;
+            color: #666;
+            font-style: italic;
+        }
+
+        /* 互动按钮 */
+        .interactive-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            margin: 5px;
+            transition: all 0.3s;
+        }
+
+        .interactive-btn:hover {
+            background: #218838;
+            transform: scale(1.05);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .tab {
+                font-size: 0.9em;
+                padding: 15px 10px;
+            }
+
+            .lesson-text {
+                font-size: 1.1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <h1>小蝌蚪找妈妈</h1>
+            <p>互动学习 · 快乐成长</p>
+        </div>
+
+        <!-- 标签页导航 -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('lesson')">课文学习</button>
+            <button class="tab" onclick="switchTab('vocab')">生字词</button>
+            <button class="tab" onclick="switchTab('exercise')">练习题</button>
+            <button class="tab" onclick="switchTab('highlight')">重点段落</button>
+        </div>
+
+        <!-- 内容区域 -->
+        <div class="content">
+
+            <!-- 课文学习 -->
+            <div id="lesson" class="tab-content active">
+                <div class="tip-box">
+                    <p>💡 学习小贴士：下图是小蝌蚪变成青蛙的整个过程，从左到右看一看，你就知道它每一步发生了什么变化。</p>
+                </div>
+
+                <!-- 课文生长过程配图（内联 SVG，自包含） -->
+                <div class="image-container">
+                    <svg viewBox="0 0 900 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="小蝌蚪生长过程">
+                        <!-- 池塘背景 -->
+                        <rect x="0" y="0" width="900" height="330" fill="#eaf6ff"/>
+                        <rect x="0" y="250" width="900" height="80" fill="#bfe3f5"/>
+                        <path d="M0,255 q 30,-12 60,0 t 60,0 t 60,0 t 60,0 t 60,0 t 60,0 t 60,0 t 60,0 t 60,0 t 60,0 t 60,0 t 60,0 t 60,0 t 60,0 t 60,0 t 60,0" stroke="#9ed3ee" stroke-width="3" fill="none"/>
+                        <!-- 箭头 -->
+                        <text x="180" y="150" font-size="26" fill="#999" text-anchor="middle">→</text>
+                        <text x="360" y="150" font-size="26" fill="#999" text-anchor="middle">→</text>
+                        <text x="540" y="150" font-size="26" fill="#999" text-anchor="middle">→</text>
+                        <text x="720" y="150" font-size="26" fill="#999" text-anchor="middle">→</text>
+
+                        <!-- ① 小蝌蚪 -->
+                        <g>
+                            <path d="M114,162 C 150,145 170,178 185,160" stroke="#3a3a3a" stroke-width="5" fill="none" stroke-linecap="round"/>
+                            <ellipse cx="90" cy="160" rx="26" ry="17" fill="#3a3a3a"/>
+                            <circle cx="81" cy="148" r="5" fill="#fff"/><circle cx="81" cy="148" r="2.5" fill="#222"/>
+                            <circle cx="99" cy="148" r="5" fill="#fff"/><circle cx="99" cy="148" r="2.5" fill="#222"/>
+                        </g>
+                        <text x="90" y="305" font-size="17" fill="#333" text-anchor="middle">① 小蝌蚪</text>
+
+                        <!-- ② 长后腿 -->
+                        <g>
+                            <path d="M294,162 C 320,148 340,176 350,162" stroke="#3a3a3a" stroke-width="5" fill="none" stroke-linecap="round"/>
+                            <path d="M300,176 q 10,18 24,16" stroke="#3a3a3a" stroke-width="4" fill="none" stroke-linecap="round"/>
+                            <path d="M288,178 q 6,20 20,20" stroke="#3a3a3a" stroke-width="4" fill="none" stroke-linecap="round"/>
+                            <ellipse cx="270" cy="160" rx="26" ry="17" fill="#3a3a3a"/>
+                            <circle cx="261" cy="148" r="5" fill="#fff"/><circle cx="261" cy="148" r="2.5" fill="#222"/>
+                            <circle cx="279" cy="148" r="5" fill="#fff"/><circle cx="279" cy="148" r="2.5" fill="#222"/>
+                        </g>
+                        <text x="270" y="305" font-size="17" fill="#333" text-anchor="middle">② 长后腿</text>
+
+                        <!-- ③ 长前腿 -->
+                        <g>
+                            <path d="M474,162 C 495,150 505,172 510,160" stroke="#3a3a3a" stroke-width="5" fill="none" stroke-linecap="round"/>
+                            <path d="M480,176 q 10,18 24,16" stroke="#3a3a3a" stroke-width="4" fill="none" stroke-linecap="round"/>
+                            <path d="M468,178 q 6,20 20,20" stroke="#3a3a3a" stroke-width="4" fill="none" stroke-linecap="round"/>
+                            <path d="M456,176 q -10,18 -24,16" stroke="#3a3a3a" stroke-width="4" fill="none" stroke-linecap="round"/>
+                            <path d="M444,178 q -6,20 -20,20" stroke="#3a3a3a" stroke-width="4" fill="none" stroke-linecap="round"/>
+                            <ellipse cx="450" cy="160" rx="26" ry="17" fill="#3a3a3a"/>
+                            <circle cx="441" cy="148" r="5" fill="#fff"/><circle cx="441" cy="148" r="2.5" fill="#222"/>
+                            <circle cx="459" cy="148" r="5" fill="#fff"/><circle cx="459" cy="148" r="2.5" fill="#222"/>
+                        </g>
+                        <text x="450" y="305" font-size="17" fill="#333" text-anchor="middle">③ 长前腿</text>
+
+                        <!-- ④ 尾巴变短 -->
+                        <g>
+                            <path d="M654,162 C 670,156 674,170 662,162" stroke="#3a3a3a" stroke-width="5" fill="none" stroke-linecap="round"/>
+                            <path d="M660,176 q 12,20 28,16" stroke="#3a3a3a" stroke-width="5" fill="none" stroke-linecap="round"/>
+                            <path d="M644,178 q 8,22 24,22" stroke="#3a3a3a" stroke-width="5" fill="none" stroke-linecap="round"/>
+                            <path d="M636,176 q -12,20 -28,16" stroke="#3a3a3a" stroke-width="5" fill="none" stroke-linecap="round"/>
+                            <path d="M620,178 q -8,22 -24,22" stroke="#3a3a3a" stroke-width="5" fill="none" stroke-linecap="round"/>
+                            <ellipse cx="630" cy="160" rx="28" ry="19" fill="#4caf50"/>
+                            <circle cx="620" cy="147" r="5.5" fill="#fff"/><circle cx="620" cy="147" r="3" fill="#222"/>
+                            <circle cx="640" cy="147" r="5.5" fill="#fff"/><circle cx="640" cy="147" r="3" fill="#222"/>
+                        </g>
+                        <text x="630" y="305" font-size="17" fill="#333" text-anchor="middle">④ 尾巴变短</text>
+
+                        <!-- ⑤ 青蛙 -->
+                        <g>
+                            <ellipse cx="810" cy="172" rx="38" ry="27" fill="#5cb85c"/>
+                            <ellipse cx="810" cy="183" rx="23" ry="16" fill="#eafbe7"/>
+                            <circle cx="795" cy="145" r="12" fill="#5cb85c"/>
+                            <circle cx="825" cy="145" r="12" fill="#5cb85c"/>
+                            <circle cx="795" cy="145" r="6.5" fill="#fff"/><circle cx="795" cy="145" r="3.2" fill="#222"/>
+                            <circle cx="825" cy="145" r="6.5" fill="#fff"/><circle cx="825" cy="145" r="3.2" fill="#222"/>
+                            <path d="M842,192 q 16,20 30,10" stroke="#5cb85c" stroke-width="7" fill="none" stroke-linecap="round"/>
+                            <path d="M778,192 q -16,20 -30,10" stroke="#5cb85c" stroke-width="7" fill="none" stroke-linecap="round"/>
+                            <path d="M828,196 q 10,16 22,12" stroke="#5cb85c" stroke-width="6" fill="none" stroke-linecap="round"/>
+                            <path d="M792,196 q -10,16 -22,12" stroke="#5cb85c" stroke-width="6" fill="none" stroke-linecap="round"/>
+                        </g>
+                        <text x="810" y="305" font-size="17" fill="#333" text-anchor="middle">⑤ 青蛙</text>
+                    </svg>
+                    <p class="image-caption">小蝌蚪生长过程：①小蝌蚪 → ②长后腿 → ③长前腿 → ④尾巴变短 → ⑤青蛙</p>
+                </div>
+
+                <div class="lesson-text">
+                    <p>池塘里有一群小蝌蚪，<span class="hl" title="大大的脑袋，黑灰色的身子，长长的尾巴">大大的脑袋，黑灰色的身子，甩着长长的尾巴</span>，快活地游来游去。</p>
+                    <p>小蝌蚪游哇游，过了几天，长出了两条后腿。他们看见鲤鱼妈妈在教小鲤鱼捕食，就迎上去，问："鲤鱼阿姨，我们的妈妈在哪里？"鲤鱼妈妈说："你们的妈妈四条腿，宽嘴巴。你们到那边去找吧！"</p>
+                    <p>小蝌蚪游哇游，过了几天，长出了两条前腿。他们看见一只乌龟摆动着四条腿在水里游，连忙追上去，叫着："妈妈，妈妈！"乌龟笑着说："我不是你们的妈妈。你们的妈妈头顶上有两只大眼睛，披着绿衣裳。你们到那边去找吧！"</p>
+                    <p>小蝌蚪游哇游，过了几天，尾巴变短了。他们游到荷花旁边，看见荷叶上<span class="hl" title="蹲、披、露、鼓四个动词写出青蛙的神气">蹲着一只大青蛙，披着碧绿的衣裳，露着雪白的肚皮，鼓着一对大眼睛</span>。</p>
+                    <p>小蝌蚪游过去，叫着："妈妈，妈妈！"青蛙妈妈低头一看，笑着说："好孩子，你们已经长成青蛙了，快跳上来吧！"他们后腿一蹬，向前一跳，蹦到了荷叶上。</p>
+                    <p>不知什么时候，小青蛙的尾巴已经不见了。他们跟着妈妈，天天去捉害虫。</p>
+                </div>
+
+                <div class="tip-box">
+                    <p>📚 思考题：小蝌蚪为什么要找一次又一次才找到妈妈？你从中学到了什么道理？（提示：耐心、坚持、记住特征）</p>
+                </div>
+            </div>
+
+            <!-- 生字词学习 -->
+            <div id="vocab" class="tab-content">
+                <div class="tip-box">
+                    <p>💡 点击生字卡片，查看拼音和释义，反复朗读，加深记忆。</p>
+                </div>
+
+                <div class="vocab-list">
+                    <div class="vocab-card" onclick="toggleVocab(this)">
+                        <div class="vocab-char">塘</div>
+                        <div class="vocab-meaning"><span class="vocab-tag">认读</span><p>拼音：táng</p><p>释义：池塘，小蝌蚪住的水池。</p></div>
+                    </div>
+                    <div class="vocab-card" onclick="toggleVocab(this)">
+                        <div class="vocab-char">脑</div>
+                        <div class="vocab-meaning"><span class="vocab-tag">认读</span><p>拼音：nǎo</p><p>释义：脑袋，头。</p></div>
+                    </div>
+                    <div class="vocab-card" onclick="toggleVocab(this)">
+                        <div class="vocab-char">袋</div>
+                        <div class="vocab-meaning"><span class="vocab-tag">认读</span><p>拼音：dài</p><p>释义：口袋；脑袋。</p></div>
+                    </div>
+                    <div class="vocab-card" onclick="toggleVocab(this)">
+                        <div class="vocab-char">灰</div>
+                        <div class="vocab-meaning"><span class="vocab-tag">认读</span><p>拼音：huī</p><p>释义：灰色，小蝌蚪身子的颜色。</p></div>
+                    </div>
+                    <div class="vocab-card" onclick="toggleVocab(this)">
+                        <div class="vocab-char">哇</div>
+                        <div class="vocab-meaning"><span class="vocab-tag">认读</span><p>拼音：wa</p><p>释义：语气词，表示感叹。</p></div>
+                    </div>
+                    <div class="vocab-card" onclick="toggleVocab(this)">
+                        <div class="vocab-char">教</div>
+                        <div class="vocab-meaning"><span class="vocab-tag">认读</span><p>拼音：jiāo</p><p>释义：教导、传授，如"教捕食"。</p></div>
+                    </div>
+                    <div class="vocab-card" onclick="toggleVocab(this)">
+                        <div class="vocab-char">捕</div>
+                        <div class="vocab-meaning"><span class="vocab-tag">认读</span><p>拼音：bǔ</p><p>释义：捉、抓，如"捕食"。</p></div>
+                    </div>
+                    <div class="vocab-card" onclick="toggleVocab(this)">
+                        <div class="vocab-char">迎</div>
+                        <div class="vocab-meaning"><span class="vocab-tag">认读</span><p>拼音：yíng</p><p>释义：对着、向前，如"迎上去"。</p></div>
+                    </div>
+                    <div class="vocab-card" onclick="toggleVocab(this)">
+                        <div class="vocab-char">阿</div>
+                        <div class="vocab-meaning"><span class="vocab-tag">认读</span><p>拼音：ā</p><p>释义：用在称呼前，如"阿姨"。</p></div>
+                    </div>
+                    <div class="vocab-card" onclick="toggleVocab(this)">
+                        <div class="vocab-char">姨</div>
+                        <div class="vocab-meaning"><span class="vocab-tag">认读</span><p>拼音：yí</p><p>释义：阿姨，对女性长辈的称呼。</p></div>
+                    </div>
+                    <div class="vocab-card" onclick="toggleVocab(this)">
+                        <div class="vocab-char">宽</div>
+                        <div class="vocab-meaning"><span class="vocab-tag">认读/书写</span><p>拼音：kuān</p><p>释义：宽阔，如"宽嘴巴"。</p></div>
+                    </div>
+                    <div class="vocab-card" onclick="toggleVocab(this)">
+                        <div class="vocab-char">龟</div>
+                        <div class="vocab-meaning"><span class="vocab-tag">认读</span><p>拼音：guī</p><p>释义：乌龟。</p></div>
+                    </div>
+                    <div class="vocab-card" onclick="toggleVocab(this)">
+                        <div class="vocab-char">顶</div>
+                        <div class="vocab-meaning"><span class="vocab-tag">认读/书写</span><p>拼音：dǐng</p><p>释义：最高处，如"头顶"。</p></div>
+                    </div>
+                    <div class="vocab-card" onclick="toggleVocab(this)">
+                        <div class="vocab-char">披</div>
+                        <div class="vocab-meaning"><span class="vocab-tag">认读</span><p>拼音：pī</p><p>释义：搭在肩背上，如"披着绿衣裳"。</p></div>
+                    </div>
+                    <div class="vocab-card" onclick="toggleVocab(this)">
+                        <div class="vocab-char">鼓</div>
+                        <div class="vocab-meaning"><span class="vocab-tag">认读</span><p>拼音：gǔ</p><p>释义：凸起、涨起，如"鼓着大眼睛"。</p></div>
+                    </div>
+                    <div class="vocab-card" onclick="toggleVocab(this)">
+                        <div class="vocab-char">碧</div>
+                        <div class="vocab-meaning"><span class="vocab-tag">认读</span><p>拼音：bì</p><p>释义：青绿色，如"碧绿"。</p></div>
+                    </div>
+                    <div class="vocab-card" onclick="toggleVocab(this)">
+                        <div class="vocab-char">蹲</div>
+                        <div class="vocab-meaning"><span class="vocab-tag">认读</span><p>拼音：dūn</p><p>释义：两腿弯曲像坐，如"蹲着"。</p></div>
+                    </div>
+                    <div class="vocab-card" onclick="toggleVocab(this)">
+                        <div class="vocab-char">露</div>
+                        <div class="vocab-meaning"><span class="vocab-tag">认读</span><p>拼音：lù</p><p>释义：显现出来，如"露着肚皮"。</p></div>
+                    </div>
+
+                    <div class="vocab-card" onclick="toggleVocab(this)">
+                        <div class="vocab-char">两</div>
+                        <div class="vocab-meaning"><span class="vocab-tag">书写</span><p>拼音：liǎng</p><p>释义：数词，两个。</p></div>
+                    </div>
+                    <div class="vocab-card" onclick="toggleVocab(this)">
+                        <div class="vocab-char">就</div>
+                        <div class="vocab-meaning"><span class="vocab-tag">书写</span><p>拼音：jiù</p><p>释义：副词，表示完成。</p></div>
+                    </div>
+                    <div class="vocab-card" onclick="toggleVocab(this)">
+                        <div class="vocab-char">哪</div>
+                        <div class="vocab-meaning"><span class="vocab-tag">书写</span><p>拼音：nǎ</p><p>释义：疑问词，哪里（口字旁）。</p></div>
+                    </div>
+                    <div class="vocab-card" onclick="toggleVocab(this)">
+                        <div class="vocab-char">睛</div>
+                        <div class="vocab-meaning"><span class="vocab-tag">书写</span><p>拼音：jīng</p><p>释义：眼珠，如"眼睛"（目字旁）。</p></div>
+                    </div>
+                    <div class="vocab-card" onclick="toggleVocab(this)">
+                        <div class="vocab-char">肚</div>
+                        <div class="vocab-meaning"><span class="vocab-tag">书写</span><p>拼音：dù</p><p>释义：肚子，腹部。</p></div>
+                    </div>
+                    <div class="vocab-card" onclick="toggleVocab(this)">
+                        <div class="vocab-char">皮</div>
+                        <div class="vocab-meaning"><span class="vocab-tag">书写</span><p>拼音：pí</p><p>释义：皮肤，如"肚皮"。</p></div>
+                    </div>
+                    <div class="vocab-card" onclick="toggleVocab(this)">
+                        <div class="vocab-char">孩</div>
+                        <div class="vocab-meaning"><span class="vocab-tag">书写</span><p>拼音：hái</p><p>释义：孩子，小孩。</p></div>
+                    </div>
+                    <div class="vocab-card" onclick="toggleVocab(this)">
+                        <div class="vocab-char">跳</div>
+                        <div class="vocab-meaning"><span class="vocab-tag">书写</span><p>拼音：tiào</p><p>释义：两脚用力离开地面，如"跳上来"。</p></div>
+                    </div>
+                </div>
+
+                <div class="tip-box">
+                    <p>✏️ 练习：请在练习本上把会写的生字（两、就、哪、宽、顶、睛、肚、皮、孩、跳）每个写 3 遍，注意笔顺和结构。</p>
+                </div>
+            </div>
+
+            <!-- 练习题 -->
+            <div id="exercise" class="tab-content">
+                <div class="tip-box">
+                    <p>💡 先独立完成练习题，再点击"查看答案"检查自己的答案。</p>
+                </div>
+
+                <!-- 基础题 -->
+                <div class="exercise-card">
+                    <div class="exercise-title">基础题（识记·理解）</div>
+                    <div class="exercise-content">
+                        <p>1. 给下面的字注音：蝌（　　）　蚪（　　）　塘（　　）　脑（　　）　袋（　　）</p>
+                        <p>2. 看拼音写词语：liǎng gè（　　）　nǎ lǐ（　　）　kuān dà（　　）　yǎn jing（　　）　tiào shàng（　　）</p>
+                        <p>3. 选词填空：（游来游去 / 跑来跑去 / 飞来飞去）<br>小蝌蚪在水里（　　　　）。小白兔在草地上（　　　　）。小鸟在天上（　　　　）。</p>
+                        <p>4. 按课文填空：小蝌蚪先长出______，再长出______，______变短，最后______不见了，变成了______。</p>
+                        <p>5. 照样子填空：（大大）的脑袋　（　　　）的身子　（　　　）的尾巴　（　　　）的衣裳　（　　　）的肚皮</p>
+                    </div>
+                    <button class="show-answer-btn" onclick="toggleAnswer('basic-answer')">查看答案</button>
+                    <div id="basic-answer" class="answer-box">
+                        <p>1. 蝌（kē）　蚪（dǒu）　塘（táng）　脑（nǎo）　袋（dài）</p>
+                        <p>2. 两个　哪里　宽大　眼睛　跳上</p>
+                        <p>3. 游来游去；跑来跑去；飞来飞去</p>
+                        <p>4. 两条后腿；两条前腿；尾巴；尾巴；青蛙</p>
+                        <p>5. （黑灰色）的身子　（长长）的尾巴　（碧绿）的衣裳　（雪白）的肚皮</p>
+                    </div>
+                </div>
+
+                <!-- 提高题 -->
+                <div class="exercise-card">
+                    <div class="exercise-title">提高题（应用·分析）</div>
+                    <div class="exercise-content">
+                        <p>1. 用"游来游去"写一句话。</p>
+                        <p>2. 照样子写句子：例：小蝌蚪游来游去。小鸟________来________去。蝴蝶________来________去。</p>
+                        <p>3. 读句子，说说你读懂了什么："小蝌蚪游哇游，过了几天，长出了两条后腿。"</p>
+                        <p>4. 小蝌蚪把乌龟错认成妈妈时心情怎样？为什么后来能找到真正的妈妈？</p>
+                        <p>5. 课文中"大大的脑袋""长长的尾巴""碧绿的衣裳""雪白的肚皮"这样的词语，好在哪里？</p>
+                    </div>
+                    <button class="show-answer-btn" onclick="toggleAnswer('advanced-answer')">查看答案</button>
+                    <div id="advanced-answer" class="answer-box">
+                        <p>1. 示例：小鱼在清澈的河水里游来游去，真快活。</p>
+                        <p>2. 小鸟飞来飞去。蝴蝶飞来飞去。（也可写"飞飞"；还能说"走来走去"等）</p>
+                        <p>3. 小蝌蚪在慢慢长大，先长出了两条后腿；"过了几天"说明变化是一步一步、需要时间的。</p>
+                        <p>4. 错认时心情高兴、急切（以为找到了）；后来能找到，是因为它每次都记住了别人说的特征（四条腿、宽嘴巴、大眼睛、绿衣裳），把特征拼全了，所以没认错。</p>
+                        <p>5. 用了叠词和表示颜色的词，把小蝌蚪和青蛙的样子写得又具体又可爱，一读就能想象出画面。</p>
+                    </div>
+                </div>
+
+                <!-- 拓展题 -->
+                <div class="exercise-card">
+                    <div class="exercise-title">拓展题（综合·创造）</div>
+                    <div class="exercise-content">
+                        <p>1. 小蝌蚪找到了妈妈，会对妈妈说什么？它们一起做了什么？请你续写故事。</p>
+                        <p>2. 你还知道哪些动物小时候和长大以后样子不一样？查一查，写下来（至少两种）。</p>
+                        <p>3. 观察一种小动物（或养蚕、种豆），写一则观察日记：写出它的样子、在做什么、你的感受。</p>
+                    </div>
+                    <button class="show-answer-btn" onclick="toggleAnswer('extend-answer')">查看答案</button>
+                    <div id="extend-answer" class="answer-box">
+                        <p>1. 示例：小蝌蚪扑进妈妈怀里说："妈妈，我找您找得好辛苦！"青蛙妈妈笑着说："好孩子，你长大了。"从此，它们天天一起在田里捉害虫。</p>
+                        <p>2. 示例：蚕（卵→蚕宝宝→结茧→飞蛾）；毛毛虫（卵→幼虫→结蛹→蝴蝶）；蟾蜍（蝌蚪→蟾蜍）。</p>
+                        <p>3. 开放题，鼓励学生真实观察、自由表达，注意写清样子、动作和感受。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 重点段落 -->
+            <div id="highlight" class="tab-content">
+                <div class="tip-box">
+                    <p>💡 重点段落是课文的精华，要重点理解、反复朗读、争取背下来。</p>
+                </div>
+
+                <div class="exercise-card">
+                    <div class="exercise-title">重点段落 1：小蝌蚪的样子</div>
+                    <div class="exercise-content">
+                        <p>池塘里有一群小蝌蚪，<span class="highlight">大大的脑袋，黑灰色的身子，甩着长长的尾巴</span>，快活地游来游去。</p>
+                    </div>
+                    <button class="interactive-btn" onclick="alert('读这一段时，想象小蝌蚪甩着长尾巴、快活游动的模样，语速稍轻快、带喜爱之情！')">朗读提示</button>
+                </div>
+
+                <div class="exercise-card">
+                    <div class="exercise-title">重点段落 2：青蛙妈妈的样子</div>
+                    <div class="exercise-content">
+                        <p>他们游到荷花旁边，看见荷叶上<span class="highlight">蹲着一只大青蛙，披着碧绿的衣裳，露着雪白的肚皮，鼓着一对大眼睛</span>。</p>
+                    </div>
+                    <button class="interactive-btn" onclick="alert('这段话连用了“蹲、披、露、鼓”四个动词，把青蛙写得多神气！试着圈出这四个动词，体会用词的准确。')">思考提示</button>
+                </div>
+
+                <div class="exercise-card">
+                    <div class="exercise-title">重点段落 3：母子团聚</div>
+                    <div class="exercise-content">
+                        <p>青蛙妈妈低头一看，笑着说：<span class="highlight">"好孩子，你们已经长成青蛙了，快跳上来吧！"</span>他们后腿一蹬，向前一跳，蹦到了荷叶上。</p>
+                    </div>
+                    <button class="interactive-btn" onclick="alert('读青蛙妈妈的话要温柔、高兴；读小蝌蚪“跳上来”要读出使劲、开心的感觉！')">朗读提示</button>
+                </div>
+
+                <div class="tip-box">
+                    <p>🎯 目标：能够背诵重点段落，理解其深层含义（生动动词、有序描写、温暖情感）。</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // 切换标签页
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // 切换生字释义显示
+        function toggleVocab(card) {
+            card.classList.toggle('show');
+        }
+
+        // 切换答案显示
+        function toggleAnswer(answerId) {
+            const answerBox = document.getElementById(answerId);
+            answerBox.classList.toggle('show');
+        }
+    </script>
+</body>
+</html>
